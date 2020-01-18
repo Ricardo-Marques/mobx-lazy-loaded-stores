@@ -1,9 +1,21 @@
 export class WebSessionStorage implements ISessionStorage {
-  set() {}
-  get<ReturnType>() {
-    // @TODO actually get
-    return (null as unknown) as ReturnType;
+  set<ValueType>(opts: { key: string; value: ValueType }) {
+    sessionStorage.setItem(opts.key, JSON.stringify({ value: opts.value }));
+  }
+  get<ReturnType>(opts: { key: string }) {
+    const stringValue = sessionStorage.getItem(opts.key) as string | null;
+
+    if (!stringValue) {
+      return null;
+    }
+
+    const { value } = JSON.parse(stringValue) as ISessionStorageItem<
+      ReturnType
+    >;
+    return value;
   }
 
-  delete() {}
+  delete(opts: { key: string }) {
+    sessionStorage.removeItem(opts.key);
+  }
 }

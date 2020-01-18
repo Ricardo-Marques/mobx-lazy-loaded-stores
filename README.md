@@ -1,44 +1,22 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**NOTE: I am not in love with the current folder structure, but it is good enough to prove a point.**
 
-## Available Scripts
+The purpose of this project is to exemplify a lazy loaded state implementation. Also leverages dependency injection pattern to allow building a store whose implementation is mostly sharable between environments (web, node, and react-native).
 
-In the project directory, you can run:
+## Lazy load state details
 
-### `yarn start`
+In this todo app, the source code for mobx, mobx-react, or `TodosStore`, is **not requested until the user sees the initial page load**. Fake a slow connection to more easily see this in your network tools.
+This will allow us to quickly show an application shell, even with poor connectivity, since **the bandwith used to get to the first browser paint is significantly less than typical store setups**.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+`useTodosStore()` is a hook that accesses the `CoreStore` passed down through `CoreStoreProvider`'s context.  
+Then, it checks CoreStore's `LazyStoreRegistry` for an existing `TodosStore` instance.  
+If one does not exist, it creates a new instance and saves it to that store registry.
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+Because the `LazyStoreRegistry` is easily accessible through the `CoreStore` context, this means any other lazy loaded store that is injected into the registry will have access to that same instance of the `TodosStore`.
 
-### `yarn test`
+This pattern is very powerful - it allows lazy loaded _and_ non lazy loaded stores to easily communicate with each other, without having to declare them as part of a singleton on app start, which is a common pattern that does not scale well in terms of application load times.
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Dependency injection based store details
 
-### `yarn build`
+There is a `CoreStore` that depends on a few other stores as dependencies. Some stores have sharable implementations (such as `AuthStore`), while others require a specific implementation for their platform (example, `WebSessionStorage`).
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+This dependency injection pattern gives us maximum state code shareability (since we do not have to re-declare stores whose implementation is platform agnostic), and huge unit testability gains, since one can easily "swap" out a store for a mock store, to mimic a scenario like request failure, network communication issues, permissions issues, etc. Basically, anything pertaining state or side effects can be easily mocked.

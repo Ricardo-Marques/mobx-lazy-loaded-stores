@@ -14,7 +14,7 @@ export class CoreStore implements ICoreStore {
     // of that store, or relying on a singleton that cannot be easily replaced
 
     // in addition to making it easy to share code between platforms, this makes it much easier to write unit tests
-    // that use a fake implementation of a certain store to mimic a certain scenario
+    // that use a fake implementation of a store to mimic a certain scenario
     sessionStorage: (coreStore: ICoreStore) => ISessionStorage;
 
     // allow core stores that are shared between platforms to optionally be provided
