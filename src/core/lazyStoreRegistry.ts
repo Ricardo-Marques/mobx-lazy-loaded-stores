@@ -15,13 +15,6 @@ export class LazyStoreRegistry implements ILazyStoreRegistry {
     return null;
   }
 
-  safeGet<LazyStore extends ILazyStore>(storeName: string) {
-    if (this._stores[storeName]) {
-      return this._stores[storeName] as LazyStore;
-    }
-    throw Error("lazyStoreRegistry - no store injected ");
-  }
-
   set<StoreGetter extends (coreStore: ICoreStore) => ILazyStore>(
     storeGetter: StoreGetter
   ) {

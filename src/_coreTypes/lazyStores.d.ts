@@ -2,9 +2,6 @@ declare interface ILazyStoreRegistry {
   get<LazyStoreInstance extends ILazyStore>(
     storeName: string
   ): ?LazyStoreInstance;
-  safeGet<LazyStoreInstance extends ILazyStore>(
-    storeName: string
-  ): LazyStoreInstance;
   set: (lazyStoreGetter: (coreStore: ICoreStore) => ILazyStore) => void;
 }
 
