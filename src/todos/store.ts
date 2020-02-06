@@ -31,7 +31,11 @@ export default class TodosStore implements ITodosStore {
 
   private _initTodosStorageAutoSave() {
     reaction(
-      () => this.list,
+      () =>
+        this.list.map(todo => {
+          const { done, assignedUserId } = todo;
+          return { done, assignedUserId };
+        }),
       () => {
         this._coreStore.sessionStorage.set({
           key: "todosRecord",
@@ -56,6 +60,11 @@ export default class TodosStore implements ITodosStore {
   @action
   public toggleDoneStatus(todo: ITodo) {
     this._todosRecord[todo.id].done = !this._todosRecord[todo.id].done;
+  }
+
+  @action
+  public assignUser(todo: ITodo, user: IUser) {
+    this._todosRecord[todo.id].assignedUserId = user.id;
   }
 }
 

@@ -26,7 +26,8 @@ export default observer(function TodoCreator() {
             todosStore.addTodo({
               id: todo.id,
               text: todo.text,
-              done: false
+              done: false,
+              assignedUserId: ""
             });
             todo.reset();
           }
